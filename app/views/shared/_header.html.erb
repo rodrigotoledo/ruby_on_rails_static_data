@@ -1,0 +1,12 @@
+<nav class="bg-gray-200 fixed top-0 left-0 w-full flex justify-between items-center p-4">
+  <ul class="flex">
+    <li class="mr-4"><%= link_to "Home", root_path, class: "text-gray-800 hover:text-gray-600" %></li>
+    <li class="mr-4"><%= link_to "About", about_path, class: "text-gray-800 hover:text-gray-600" %></li>
+  </ul>
+  <%= turbo_frame_tag 'navbar' do %>
+    <%= form_with url: videos_path,  method: :get, class: "flex items-center", id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do |form| %>
+      <%= form.text_field :query, placeholder: "Search", class: "px-4 py-2 border border-gray-400 rounded-lg" %>
+      <%= form.submit "Search", class: "ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg" %>
+    <% end %>
+  <% end %>
+</nav>
