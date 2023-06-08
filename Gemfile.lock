@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    action-cable-redis-backport (1.0.2)
+      actioncable (>= 5.0, < 7.1)
     actioncable (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
@@ -70,7 +72,14 @@ GEM
     bootsnap (1.16.0)
       msgpack (~> 1.2)
     builder (3.2.4)
+    cable_ready (5.0.0)
+      actionpack (>= 5.2)
+      actionview (>= 5.2)
+      activesupport (>= 5.2)
+      railties (>= 5.2)
+      thread-local (>= 1.1.0)
     concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
     crass (1.0.6)
     date (3.3.3)
     debug (1.8.0)
@@ -151,6 +160,13 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    redis (5.0.6)
+      redis-client (>= 0.9.0)
+    redis-client (0.14.1)
+      connection_pool
+    redis-session-store (0.11.5)
+      actionpack (>= 6, < 8)
+      redis (>= 3, < 6)
     reline (0.3.5)
       io-console (~> 0.5)
     sprockets (4.2.0)
@@ -163,9 +179,20 @@ GEM
     sqlite3 (1.6.3-x86_64-darwin)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
+    stimulus_reflex (3.5.0.rc2)
+      actioncable (>= 5.2, < 8)
+      actionpack (>= 5.2, < 8)
+      actionview (>= 5.2, < 8)
+      activesupport (>= 5.2, < 8)
+      cable_ready (>= 5.0.0.rc2)
+      nokogiri (~> 1.0)
+      rack (>= 2, < 4)
+      railties (>= 5.2, < 8)
+      redis (>= 4.0, < 6.0)
     tailwindcss-rails (2.0.29-x86_64-darwin)
       railties (>= 6.0.0)
     thor (1.2.2)
+    thread-local (1.1.0)
     timeout (0.3.2)
     turbo-rails (1.4.0)
       actionpack (>= 6.0.0)
@@ -187,6 +214,7 @@ PLATFORMS
   x86_64-darwin-22
 
 DEPENDENCIES
+  action-cable-redis-backport (~> 1)
   bootsnap
   debug
   faker (~> 3.2)
@@ -194,9 +222,11 @@ DEPENDENCIES
   jbuilder
   puma (~> 5.0)
   rails (~> 7.0.5)
+  redis-session-store (~> 0.11.5)
   sprockets-rails
   sqlite3 (~> 1.4)
   stimulus-rails
+  stimulus_reflex (= 3.5.0.rc2)
   tailwindcss-rails
   turbo-rails
   tzinfo-data

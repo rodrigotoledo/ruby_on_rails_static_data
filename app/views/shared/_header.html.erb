@@ -4,9 +4,13 @@
     <li class="mr-4"><%= link_to "About", about_path, class: "text-gray-800 hover:text-gray-600" %></li>
   </ul>
   <%= turbo_frame_tag 'navbar' do %>
-    <%= form_with url: videos_path,  method: :get, class: "flex items-center", id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do |form| %>
-      <%= form.text_field :query, placeholder: "Search", class: "px-4 py-2 border border-gray-400 rounded-lg" %>
-      <%= form.submit "Search", class: "ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg" %>
+    <%= content_tag :div, id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do %>
+      <%=content_tag :div, class: "flex items-center" do %>
+        <%= text_field_tag :query, "", placeholder: "Search", class: "px-4 py-2 border border-gray-400 rounded-lg", data: { reflex: "keyup->Video#search" } %>
+      <% end %>
+      <%=content_tag :div, id: "results" do %>
+        <%=render partial: 'pages/videos', locals: {videos: [], query: ''} %>
+      <% end %>
     <% end %>
   <% end %>
 </nav>

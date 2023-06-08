@@ -267,3 +267,123 @@ the final code will be
   <%= form.submit "Search", class: "ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg" %>
 <% end %>
 ```
+
+## Step 2: using stimulus reflex and turboframe
+
+Now it's time to broadcast the results of the search and when moving to another page don't change the results anymore
+
+## Moving videos to partial
+
+Let's rename the video.html.erb file to `_videos.html.erb` and replace with the code below
+
+```
+<% if @videos && @videos.any? %>
+  <div class='absolute h-60 bg-white overflow-auto p-2 mt-4'>
+    <h2 class="text-xl font-bold mb-4">Search Results for "<%= params[:query] %>" 🔎📺</h2>
+    <ul class="space-y-4">
+      <% @videos.each do |video| %>
+        <li class="border border-gray-200 bg-gray-100 p-4">
+          <h3 class="top-0 left-0 w-full bg-gray-100 text-gray-800 font-bold py-2 z-10"><%= video.title %></h3>
+          <%= link_to video.url, class: "text-blue-500 hover:underline block mt-8" do %>
+            <%= video.url %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+```
+
+and just to have something let's add the @videos inside the home action
+
+```
+  def home
+    # @videos = Video.where('title like ?', "%#{params[:query]}%") unless params[:query].nil?
+    @videos = Video.all
+  end
+```
+
+and in the `_header.html.erb` we need change removing the form, involving the text_field_tag and video results to permanently data
+
+```
+<!-- ... -->
+<%= turbo_frame_tag 'navbar' do %>
+  <%= content_tag :div, id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do %>
+    <%=content_tag :div, class: "flex items-center" do %>
+      <%= text_field_tag :query, "", placeholder: "Search", class: "px-4 py-2 border border-gray-400 rounded-lg" %>
+    <% end %>
+    <%=content_tag :div, id: "results" do %>
+      <%=render partial: 'pages/videos', locals: {videos: @videos, query:  params[:query] } %>
+    <% end %>
+  <% end %>
+<% end %>
+```
+
+and change the `_videos.html.erb` for to have absolutely the position in the page and floating on the screen
+
+```
+<% if videos && !videos.blank? %>
+  <div class="absolute right-0 h-60 bg-white overflow-auto mt-4">
+    <h2 class="text-xl font-bold mb-4">Search Results for "<%= query %>" 🔎📺</h2>
+    <ul class="space-y-4">
+      <% videos.each do |video| %>
+        <li class="border border-gray-200 bg-gray-100 p-4">
+          <h3 class="w-full bg-gray-100 text-gray-800 font-bold py-2 z-10"><%= video.title %></h3>
+          <%= link_to video.url, class: "text-blue-500 hover:underline block mt-8" do %>
+            <%= video.url %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+```
+
+## Now we need to add the stimulus reflex
+
+This gem will help to do the integration of the frontend with backend class
+Inside the Gemfile add the gem with this version
+
+```
+gem 'stimulus_reflex', '3.5.0.rc2'
+```
+
+And install the `stimulus_reflex` running, tip: for all questions type YES or Y
+
+```
+bundle
+rake stimulus_reflex:install
+```
+
+
+Add the VideoReflex class with search action
+
+```
+rails g stimulus_reflex video search
+```
+
+Inside the VideoReflex class we will morph the results of the search
+
+```
+def search
+  videos = Video.where('title like ?', "%#{element.value}%") unless element.value.blank?
+  videos ||= []
+  morph '#results', render(partial: 'pages/videos', locals: {videos: videos, query: element.value})
+end
+```
+
+FINALLY let's morph the results of the search and remove some files
+
+```
+<!-- ... -->
+<%= turbo_frame_tag 'navbar' do %>
+  <%= content_tag :div, id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do %>
+    <%=content_tag :div, class: "flex items-center" do %>
+      <%= text_field_tag :query, "", placeholder: "Search", class: "px-4 py-2 border border-gray-400 rounded-lg", data: { reflex: "keyup->Video#search" } %>
+    <% end %>
+    <%=content_tag :div, id: "results" do %>
+      <%=render partial: 'pages/videos', locals: {videos: [], query: ''} %>
+    <% end %>
+  <% end %>
+<% end %>
+```

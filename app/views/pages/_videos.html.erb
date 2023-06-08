@@ -1,0 +1,15 @@
+<% if videos && !videos.blank? %>
+  <div class="absolute right-0 h-60 bg-white overflow-auto mt-4">
+    <h2 class="text-xl font-bold mb-4">Search Results for "<%= query %>" 🔎📺</h2>
+    <ul class="space-y-4">
+      <% videos.each do |video| %>
+        <li class="border border-gray-200 bg-gray-100 p-4">
+          <h3 class="w-full bg-gray-100 text-gray-800 font-bold py-2 z-10"><%= video.title %></h3>
+          <%= link_to video.url, class: "text-blue-500 hover:underline block mt-8" do %>
+            <%= video.url %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
