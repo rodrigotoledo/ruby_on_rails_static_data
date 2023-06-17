@@ -2,6 +2,12 @@
   <ul class="flex">
     <li class="mr-4"><%= link_to "Home", root_path, class: "text-gray-800 hover:text-gray-600" %></li>
     <li class="mr-4"><%= link_to "About", about_path, class: "text-gray-800 hover:text-gray-600" %></li>
+    <li class="mr-4">
+    <%=turbo_stream_from 'latest_video' %>
+    <%=turbo_frame_tag 'latest_video' do %>
+      <%=render 'videos/latest_video'%>
+    <% end %>
+    </li>
   </ul>
   <%= turbo_frame_tag 'navbar' do %>
     <%= content_tag :div, id: 'search-videos', data: {turbo_frame: "_top", turbo_permanent: true} do %>
